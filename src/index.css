@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-heading: 'Cinzel', 'Times New Roman', Georgia, serif;
+    --font-editorial: 'Newsreader', 'Georgia', serif;
+    --font-body: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --accent-editorial: #B85D42;
+    --accent-editorial-dark: #8F3F2A;
+    --accent-editorial-light: #DF8E7C;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #0F0F0F;
+    color: #E2E8F0;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+  }
+
+  .font-serif {
+    font-family: var(--font-editorial);
+  }
+
+  .font-serif-body {
+    font-family: var(--font-body);
+    font-size: 1.18rem;
+    line-height: 1.7;
+  }
+
+  /* Custom scrollbar for editorial dark theme */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0F0F0F;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #25201F;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #B85D42;
+  }
+}
+
+/* Editorial aesthetic utilities */
+.editorial-card {
+  background-color: #161616;
+  border-top: 2px solid #B85D42;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.editorial-card:hover {
+  background-color: #1C1C1C;
+}
+
+/* Print layout optimizations */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+
