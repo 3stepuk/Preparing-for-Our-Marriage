@@ -15,6 +15,8 @@ import {
   ShieldCheck,
   ChevronDown,
   Church,
+  Download,
+  Upload,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -38,7 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenOptIn,
   onOpenProfile,
 }) => {
-  const { profile } = useCourse();
+  const { profile, exportData, importData } = useCourse();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [convDropdownOpen, setConvDropdownOpen] = useState(false);
   const [appDropdownOpen, setAppDropdownOpen] = useState(false);
@@ -55,6 +57,33 @@ export const Navbar: React.FC<NavbarProps> = ({
     profile.partner1Name && profile.partner2Name
       ? `${profile.partner1Name} & ${profile.partner2Name}`
       : profile.partner1Name || 'Engaged Couple';
+
+  const handleExport = () => {
+    const jsonStr = exportData();
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `preparing-for-marriage-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content && importData(content)) {
+        window.location.reload();
+      } else {
+        alert('Import failed: not a valid backup file.');
+      }
+    };
+    reader.readAsText(file);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-[#141414] border-b border-white/10 select-none">
@@ -268,6 +297,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Parish Linked</span>
               </span>
             )}
+
+            {/* Export Backup */}
+            <button
+              onClick={handleExport}
+              className="hidden md:inline-flex items-center gap-1.5 p-2 rounded bg-[#161616] border border-white/10 hover:border-[#B85D42]/60 text-slate-300 hover:text-white transition-all text-xs cursor-pointer"
+              title="Export backup (your progress + notes) as JSON"
+            >
+              <Download className="w-3.5 h-3.5 text-[#B85D42]" />
+            </button>
+
+            {/* Import Backup */}
+            <label
+              className="hidden md:inline-flex items-center gap-1.5 p-2 rounded bg-[#161616] border border-white/10 hover:border-[#B85D42]/60 text-slate-300 hover:text-white transition-all text-xs cursor-pointer"
+              title="Import a backup JSON file"
+            >
+              <Upload className="w-3.5 h-3.5 text-[#B85D42]" />
+              <input type="file" accept="application/json" className="hidden" onChange={handleImport} />
+            </label>
 
             {/* Couple Profile Avatar/Button */}
             <button

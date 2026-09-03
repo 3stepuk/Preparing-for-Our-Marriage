@@ -25,6 +25,8 @@ const defaultProfile: CoupleProfile = {
 interface CourseContextType {
   profile: CoupleProfile;
   updateProfile: (updates: Partial<CoupleProfile>) => void;
+  exportData: () => string;
+  importData: (jsonStr: string) => boolean;
   toggleConversationComplete: (num: number) => void;
   isConversationComplete: (num: number) => boolean;
   toggleDiscussionComplete: (id: string) => void;
@@ -74,6 +76,29 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateProfile = (updates: Partial<CoupleProfile>) => {
     setProfile((prev) => ({ ...prev, ...updates }));
+  };
+
+  const exportData = (): string => {
+    return JSON.stringify({
+      profile,
+      exportedAt: new Date().toISOString(),
+      version: '1.0.0',
+      app: 'Preparing for Our Marriage',
+    }, null, 2);
+  };
+
+  const importData = (jsonStr: string): boolean => {
+    try {
+      const parsed = JSON.parse(jsonStr);
+      if (parsed && typeof parsed === 'object') {
+        const imported = parsed.profile || parsed;
+        setProfile((prev) => ({ ...defaultProfile, ...prev, ...imported }));
+        return true;
+      }
+    } catch {
+      // ignore parse errors
+    }
+    return false;
   };
 
   const toggleConversationComplete = (num: number) => {
@@ -229,6 +254,8 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       value={{
         profile,
         updateProfile,
+        exportData,
+        importData,
         toggleConversationComplete,
         isConversationComplete,
         toggleDiscussionComplete,
